@@ -1,3 +1,5 @@
+import hashlib
+import os
 class user:
     def __init__(self, name, email, password):
         self.name = name
@@ -40,3 +42,26 @@ class system:
     def __init__(self):
         self.users = []
         self.events = []
+
+    def add_user(self):
+        with open('users.txt', 'r') as f:
+            users = f.read().splitlines()
+
+        for user in users:
+            args = user.split
+            if login ==args[0]:
+                return False
+        
+        with open('users.txt', 'a') as f:
+            f.write(f'{login}:{password}\n')
+        return True
+    
+    def get_user(login: str, password: str) -> bool:
+        with open('users.txt', 'r') as f:
+            users = f.read().splitlines()  # Считываем всех пользователей из файла
+
+        for user in users:
+            args = user.split(':')
+            if login == args[0] and password == args[1]:  # Если пользователь с таким логином и паролем существует
+                return True
+        return False
