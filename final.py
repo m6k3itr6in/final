@@ -43,7 +43,7 @@ class System:
     def __init__(self):
         pass
 
-    def add_user(self, email, login:str, password:str) -> bool:
+    def add_user(self, email, login: str, password: str, is_admin: bool = False) -> bool:
         with open('users.txt', 'r') as f:
             users = f.read().splitlines()
 
@@ -52,19 +52,20 @@ class System:
             if login ==args[0]:
                 return False
         
+        role = 'admin' if is_admin else 'user'
         with open('users.txt', 'a') as f:
             f.write(f'{login}:{password}:{email}\n')
         return True
     
-    def get_user(self, login: str, hash_password: str) -> bool:
+    def get_user(self, login: str, hash_password: str) -> bool: 
         with open('users.txt', 'r') as f:
             users = f.read().splitlines()  # Считываем всех пользователей из файла
 
         for user in users:
             args = user.split(':')
             if login == args[0] and hash_password == args[1]:
-                return True
-        return False
+                return (True, args[2])
+        return (False, None)
     
     def hash_password(self, text):
         return hashlib.sha256(text.encode()).hexdigest()
@@ -73,10 +74,11 @@ class System:
         email = input('Enter your email: ')
         login = input('Choose a username: ')
         password = input('Choose a password: ')
+        is_admin = False
 
         hash_password = self.hash_password(password)
 
-        if self.add_user(email, login, hash_password):
+        if self.add_user(email, login, hash_password, is_admin): # хз для коммита надо
             print('Registration successful.')
         else:
             print('User already exists. Please try logging in.')
@@ -86,10 +88,17 @@ class System:
         password = input('Enter your password: ')
 
         hash_password = self.hash_password(password)
+        found, role = self.get_user(login, hash_password) 
 
         if self.get_user(login, hash_password):
-            print(f'Welcome back, {login}!')
+            print(f'Welcome back, {login}!') 
+        if found:
+            print(f'Welcome back, {login}! Your role: {role}.')
             # Здесь можно добавить доступ к мероприятиям и билетам
+            if role == 'admin':
+                print("You have admin access.")
+            else:
+                print("You have user access.")
         else:
             print('Invalid credentials. Please try again.')
 
