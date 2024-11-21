@@ -51,30 +51,32 @@ class System:
             args = user.split(':')
             if login ==args[0]:
                 return False
-            
-        hashed_password = hashlib.sha256(password.encode()).hexdigest()
         
         with open('users.txt', 'a') as f:
             f.write(f'{login}:{password}:{email}\n')
         return True
     
-    def get_user(self, login: str, password: str) -> bool:
+    def get_user(self, login: str, hash_password: str) -> bool:
         with open('users.txt', 'r') as f:
             users = f.read().splitlines()  # Считываем всех пользователей из файла
 
         for user in users:
             args = user.split(':')
-            if login == args[0]:
-                if hashlib.sha256(password.encode()).hexdigest():  # Если пользователь с таким логином и паролем существует
-                    return True
+            if login == args[0] and hash_password == args[1]:
+                return True
         return False
+    
+    def hash_password(self, text):
+        return hashlib.sha256(text.encode()).hexdigest()
     
     def register_user(self):
         email = input('Enter your email: ')
         login = input('Choose a username: ')
         password = input('Choose a password: ')
 
-        if self.add_user(email, login, password):
+        hash_password = self.hash_password(password)
+
+        if self.add_user(email, login, hash_password):
             print('Registration successful.')
         else:
             print('User already exists. Please try logging in.')
@@ -83,7 +85,9 @@ class System:
         login = input('Enter your username: ')
         password = input('Enter your password: ')
 
-        if self.get_user(login, password):
+        hash_password = self.hash_password(password)
+
+        if self.get_user(login, hash_password):
             print(f'Welcome back, {login}!')
             # Здесь можно добавить доступ к мероприятиям и билетам
         else:
