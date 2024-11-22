@@ -1,5 +1,4 @@
 import hashlib
-import os
 class User:
     def __init__(self, name, email, password):
         self.name = name
@@ -49,45 +48,56 @@ class System:
 
         for user in users:
             args = user.split(':')
-            if login ==args[0]:
+            if login == args[0]:
                 return False
         
         with open('users.txt', 'a') as f:
             f.write(f'{login}:{password}:{email}\n')
         return True
     
-    def get_user(self, login: str, hash_password: str) -> bool: 
+    def get_user(self, login: str, hash_password: str) -> bool:
         with open('users.txt', 'r') as f:
-            users = f.read().splitlines()  # Считываем всех пользователей из файла
+            users = f.read().splitlines()
 
         for user in users:
             args = user.split(':')
             if login == args[0] and hash_password == args[1]:
                 return True
+        return False  
 
     def get_admin(self, login: str, hash_password: str) -> bool:
         with open('users.txt', 'r') as f:
             users = f.read().splitlines()
 
-        for user in users:  
+        for user in users:
             args = user.split(':')
             if login == args[0] == hash_password == args[1]:
                 return True
-        
+        return False
+    
     def hash_password(self, text):
         return hashlib.sha256(text.encode()).hexdigest()
     
     def register_user(self):
         email = input('Enter your email: ')
+        is_valid = self.is_valid_email(email)
+    
+        if not is_valid:
+            print("Please enter a valid email address.")
+            return  
+
         login = input('Choose a username: ')
         password = input('Choose a password: ')
-
+        
         hash_password = self.hash_password(password)
 
-        if self.add_user(email, login, hash_password):
-            print('Registration successful.')
+        if login != password:
+            if self.add_user(email, login, hash_password):
+                print('Registration successful.')
+            else:
+                print('User already exists. Please try logging in.')
         else:
-            print('User already exists. Please try logging in.')
+            print('Login must not be the same as password')
 
     def login_user(self):
         login = input('Enter your username: ')
@@ -97,16 +107,26 @@ class System:
         role = self.get_user(login, hash_password)
         is_admin = self.get_admin(login, hash_password) 
 
-        if role != is_admin:
+        if role == is_admin:
             print(f'Welcome back, {login}!' 
                 '\nYou have admin access.')
-        elif role == is_admin:
+        elif role != is_admin:
             print(f'Welcome back, {login}!'
                 '\nYou have user access.')
         else:
             print('Invalid credentials. Please try again.')
+    
+    def is_valid_email(self, email):
+        with open('users.txt', 'r') as f:
+            users = f.read().splitlines()
 
-# Пример использования
+        for user in users:
+            if "@" not in email or "." not in email:
+                print("Email must contain '@' and '.'")
+                return False
+            else:
+                return True
+
 system = System()
 choice = input('Do you want to (r)egister or (l)ogin? ')
 
