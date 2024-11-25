@@ -108,7 +108,7 @@ class Events:
                 print("Invalid film title.")
         
         elif choice_events.lower() == 'p':
-            print("Available performances:")
+            print("Available performances:")  
             for title in self.performances.keys():
                 print(f"- {title}")
 
@@ -137,41 +137,55 @@ class System:
     def __init__(self):
         pass
 
-    def add_user(self, email, login: str, password: str) -> bool:
+    def add_user(self, email, login: str, password: str, access: str) -> bool:
+
         with open('users.txt', 'r') as f:
             users = f.read().splitlines()
 
         for user in users:
             args = user.split(':')
             if login == args[0]:
+                print('This login is currently used.')
                 return False
-        
+            elif email == args[2]:
+                print('This email is already registered.')
+                return False
+
         with open('users.txt', 'a') as f:
-            f.write(f'{login}:{password}:{email}\n')
+            f.write(f'{login}:{password}:{email}:{access}\n')
         return True
-    
-    def get_user(self, login: str, hash_password: str) -> bool:
+
+    def get_user(self, login: str, hash_password: str):
+
         with open('users.txt', 'r') as f:
             users = f.read().splitlines()
 
         for user in users:
             args = user.split(':')
             if login == args[0] and hash_password == args[1]:
-                return True
-        return False  
-
-    def get_admin(self, login: str, hash_password: str) -> bool:
-        with open('users.txt', 'r') as f:
-            users = f.read().splitlines()
-
-        for user in users:
-            args = user.split(':')
-            if login == args[0] == hash_password == args[1]:
-                return True
-        return False
+                return args[3]  # Возвращаем access
+        return None  # Если пользователь не найден
     
     def hash_password(self, text):
         return hashlib.sha256(text.encode()).hexdigest()
+    
+    def register_admin(self):
+        email = input('Enter your email: ')
+        is_valid = self.is_valid_email(email)
+    
+        if not is_valid:
+            print("Please enter a valid email address.")
+            return  
+
+        login = input('Choose a username: ')
+        password = input('Choose a password: ')
+        
+        hash_password = self.hash_password(password)
+
+        if self.add_user(email, login, hash_password, 'admin'):  # Передаем 'admin'
+            print('Admin registration successful.')
+        else:
+            print('User already exists. Please try logging in.')
     
     def register_user(self):
         email = input('Enter your email: ')
@@ -187,8 +201,8 @@ class System:
         hash_password = self.hash_password(password)
 
         if login != password:
-            if self.add_user(email, login, hash_password):
-                print('Registration successful.')
+            if self.add_user(email, login, hash_password, 'user'):  # Передаем 'user'
+                print('User registration successful.')
             else:
                 print('User already exists. Please try logging in.')
         else:
@@ -199,38 +213,34 @@ class System:
         password = input('Enter your password: ')
 
         hash_password = self.hash_password(password)
-        role = self.get_user(login, hash_password)
-        is_admin = self.get_admin(login, hash_password) 
 
-        if role == is_admin:
-            print(f'Welcome back, {login}!' 
-                '\nYou have admin access.')
-        elif role != is_admin:
-            print(f'Welcome back, {login}!'
-                '\nYou have user access.')
+        access_level = self.get_user(login, hash_password)
+        if access_level is not None:
+            print(f'Welcome back, {login}! Your access level is: {access_level}')
         else:
             print('Invalid credentials. Please try again.')
     
     def is_valid_email(self, email):
-        with open('users.txt', 'r') as f:
-            users = f.read().splitlines()
+        if "@" not in email or "." not in email:
+            print("Email must contain '@' and '.'")
+            return False
+        return True
 
-        for user in users:
-            if "@" not in email or "." not in email:
-                print("Email must contain '@' and '.'")
-                return False
-            else:
-                return True
 
-system = System()
+
 event = Events()
-choice = input('Do you want to (r)egister or (l)ogin? ')
+system = System()
+choice = input('Do you want to (r)egister, (l)ogin? ')
+
 
 if choice.lower() == 'r':
     system.register_user()
 elif choice.lower() == 'l':
     system.login_user()
-    event.event_selection()
+elif choice == '1234':
+    system.register_admin()
 else:
     print('Invalid choice.')
+
+
 

@@ -1,2 +1,8 @@
-admin:admin:admin
-ako:f0c0dc9a46fce7c0c797f18ddee0d3c9073590662797070b2381852be325a5a1:ako
+<<<<<<< HEAD
+make:8e35c2cd3bf6641bdb0e2050b76932cbb2e6034a0ddacc1d9bea82a6ba57f7cf:asf@a.s:admin
+ako:8e35c2cd3bf6641bdb0e2050b76932cbb2e6034a0ddacc1d9bea82a6ba57f7cf:asf@sa.l:user
+=======
+ako:f0c0dc9a46fce7c0c797f18ddee0d3c9073590662797070b2381852be325a5a1:akoshojurue:494f945dda349d20cbc64a8d28c504b33a9c12e1e56d8a9e32035ef7150158eb:ako@example.com
+dqwdwq:494f945dda349d20cbc64a8d28c504b33a9c12e1e56d8a9e32035ef7150158eb:fbiqwfb@psopsodv.kpcv
+admin:5db1fee4b5703808c48078a76768b155b421b210c0761cd6a5d223f4d99f1eaa:admin@example.com:user
+>>>>>>> fac5ede5538ab4b55c63c21ff5f8fab1c58476bc
