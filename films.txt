@@ -1,0 +1,27 @@
+Leon:
+Genre: action, thriller
+Year of production: 1994
+Description: An orphan girl becomes the partner of an assassin. A cult thriller starring Jean Reno and Natalie Portman.
+
+The disgusting eight:
+Genre: western, crime, thriller, drama, detective
+Year of production: 2015
+Description: USA after the Civil War. 
+        Legendary bounty hunter John Root (The Executioner) accompanies the prisoner. 
+        On the way, they are joined by other travelers. A snowstorm forces them to seek refuge in a remote store, 
+        where an eccentric company has already gathered: a Confederate general, a Mexican, a cowboy... 
+        One of them is not who he claims to be
+
+Seven:
+Genre: thriller, detective, crime, drama
+Year of production: 1995
+Description: Detective William Somerset is a veteran criminal investigator who dreams of retiring and leaving the city. 
+        Seven days before retiring, he will face two troubles: a young partner, Mills, and a particularly brutal murder. 
+        An experienced investigator understands that this crime is likely to be followed by others.
+
+Shutter Island:
+Genre: thriller, detective, drama
+Year of production: 2005
+Description: Two American bailiffs are sent to one of the islands in Massachusetts 
+        to investigate the disappearance of a patient at a clinic for insane criminals. 
+        During the investigation, they will have to face a web of lies, a hurricane and a deadly riot of the clinic's inhabitants.
