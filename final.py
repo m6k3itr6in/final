@@ -78,6 +78,16 @@ class Events:
         And where the princess is, there will definitely be love!..'''
     },
 
+    "Once upon a time in the kingdom": {
+        "Author's work": "I.S. Sukhanova",
+        "Description": '''For the third time, boys and girls with Vasya Gromov 
+        will go on a fun trip together with Bremen Town musicians and other heroes of well-known fairy tales. 
+        We will meet the real king! And where there is a king, of course there is a princess.
+        And where the princess is, there will definitely be love!..'''
+    },
+
+    
+
     "Moping in Russian": {
         "Author's work": "I.S. Sukhanova",
         "Description": '''A simple, at first glance, story about the everyday course of life of a provincial nobleman 
@@ -163,8 +173,8 @@ class System:
         for user in users:
             args = user.split(':')
             if login == args[0] and hash_password == args[1]:
-                return args[3]  # Возвращаем access
-        return None  # Если пользователь не найден
+                return args[3]
+        return None
     
     def hash_password(self, text):
         return hashlib.sha256(text.encode()).hexdigest()
@@ -182,7 +192,10 @@ class System:
         
         hash_password = self.hash_password(password)
 
-        if self.add_user(email, login, hash_password, 'admin'):  # Передаем 'admin'
+
+        
+
+        if self.add_user(email, login, hash_password, 'admin'):
             print('Admin registration successful.')
         else:
             print('User already exists. Please try logging in.')
@@ -201,7 +214,7 @@ class System:
         hash_password = self.hash_password(password)
 
         if login != password:
-            if self.add_user(email, login, hash_password, 'user'):  # Передаем 'user'
+            if self.add_user(email, login, hash_password, 'user'):
                 print('User registration successful.')
             else:
                 print('User already exists. Please try logging in.')
@@ -213,8 +226,8 @@ class System:
         password = input('Enter your password: ')
 
         hash_password = self.hash_password(password)
-
         access_level = self.get_user(login, hash_password)
+        
         if access_level is not None:
             print(f'Welcome back, {login}! Your access level is: {access_level}')
         else:
@@ -226,21 +239,17 @@ class System:
             return False
         return True
 
-
-
-event = Events()
 system = System()
-choice = input('Do you want to (r)egister, (l)ogin? ')
-
+event = Events()
+choice = input('Do you want to (r)egister or (l)ogin? ')
 
 if choice.lower() == 'r':
     system.register_user()
+    event.event_selection()
 elif choice.lower() == 'l':
     system.login_user()
+    event.event_selection()
 elif choice == '1234':
     system.register_admin()
 else:
     print('Invalid choice.')
-
-
-
