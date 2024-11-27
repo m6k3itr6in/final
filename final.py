@@ -1,51 +1,33 @@
 import hashlib
+import time
 class User:
-    def __init__(self, name, email, password):
-        self.name = name
-        self.email = email
-        self.__password = password
-        self.tickets = []
+    def __init__(self, login):
+        self.login = login
 
-    def register(self):
-        print(f'User {self.name} is registered')
+    def display_purchases(self):
+        with open('purchased_tickets.txt', 'r') as f:
+            information = f.read().strip().splitlines()
+                
+            user_purchases = []
+            for record in information:
+                user_login, title, amount = record.split(':')
+                if user_login == self.login:
+                    user_purchases.append((title, amount))
 
-    def user_tickets(self):
-        if not self.tickets:
-            print('You have no purchased tickets')
-        else:
-            print(f'User {self.name} tickets:')
-            for ticket in self.tickets:
-                print(f'Ticket ID: {ticket.ticket_id}, Status: {ticket.status}')
-
-    # def buy_ticket(self, event):
-    #     if self.tickets:  
-    #         ticket = self.tickets.pop()  
-    #         ticket.mark_sold()  
-    #         self.tickets.append(ticket)  
-    #         print(f'{self.name} bought ticket ID: {ticket.ticket_id} for the event: {event.name}')
-    #     else:
-    #         print(f'Sorry, there are no available tickets for the event: {event.name}')
+            if not user_purchases:
+                print('You have no purchases.')
+            else:
+                print('Your purchases:')
+                for title, amount in user_purchases:
+                    print(f'Film/Performance: {title}, Amount: {amount}')
 
 class Events:
     def __init__(self):
         pass
-    
-        # with open ('films.txt', 'w') as f:
-        #     for title, details in self.films.items():
-        #         f.write(f"{title}:\n")
-        #         for key, value in details.items():
-        #             f.write(f"{key}: {value}\n")
-        #         f.write("\n")
-    
-        # with open('performances.txt', 'w') as f:
-        #     for title, details in self.performances.items():
-        #         f.write(f"{title}:\n")
-        #         for key, value in details.items():
-        #             f.write(f"{key}: {value}\n")
-        #         f.write("\n")
-    
+   
     def event_selection(self):
         choice_events = input('What are you interested in? (f)ilms or (p)erformance: ')
+        print('--------------------')
 
         if choice_events.lower() == 'f':
             with open('films.txt', 'r') as f:
@@ -56,20 +38,22 @@ class Events:
                     print(f"- {title.strip()}")
 
             selected_film = input('Please enter the film title: ').strip().lower()
+            print('--------------------')
             found = False
 
-            with open('films.txt', 'r', encoding='utf-8') as f:
+            with open('films.txt', 'r') as f:
                 films = f.read().strip().split("\n\n")
 
                 for film in films:
                     title = film.split(':')[0].strip().lower()
                     if title == selected_film:
-                        print(film) 
+                        print(film)
+                        print('--------------------') 
                         found = True
-                        break
 
             if not found:
-                print("Film not found.")
+                print('Film not found.')
+                return
         
         elif choice_events.lower() == 'p':
             with open('performances.txt', 'r') as f:
@@ -80,6 +64,7 @@ class Events:
                     print(f"- {title.strip()}")
 
             selected_performance = input('Please enter the performance title: ').strip().lower()
+            print('--------------------')
             found = False
 
             with open('performances.txt', 'r') as f:
@@ -88,33 +73,99 @@ class Events:
                 for performance in performances:
                     title = performance.split(':')[0].strip().lower()
                     if title == selected_performance:
-                        print(performance) 
+                        print(performance)
+                        print('--------------------') 
                         found = True
-                        break
-
+            
             if not found:
-                print("Performance not found.")
-
+                print('Performance not found.')
+                return
         else:
             print('Invalid choice.')
-        
-class Ticket:
-    def __init__(self, ticket_id):
-        self.ticket_id = ticket_id
-        self.status = 'available'
+            return
 
-    def mark_sold(self):
-        self.status = 'sold'
+
+class Ticket:
+    def __init__(self):
+        pass
+
+    def add_tickets(self):
+        with open('films.txt', 'r') as d:
+            films = d.read().strip().split("\n\n") 
+            film_titles = [film.split(':')[0].strip() for film in films]
+
+        with open('performances.txt', 'r') as t:
+            performances = t.read().strip().split("\n\n") 
+            performance_titles = [event.split(':')[0].strip() for event in performances]
+
+        for title in film_titles:
+            amount = input(f'Input available amount tickets for film "{title}": ')
+            self.save_ticket(title, amount)
+
+        for title in performance_titles:
+            amount = input(f'Input available amount tickets for performance "{title}": ')
+            self.save_ticket(title, amount)
+
+    def save_ticket(self, title, amount):
+        with open('available_tickets.txt', 'a') as f:
+            f.write(f"{title}:{amount}\n") 
+
+    def display_available_tickets(self):
+        available = {}
+
+        with open('available_tickets.txt', 'r') as t:
+            tickets = t.read().strip().splitlines()
+            for ticket in tickets:
+                title, amount = ticket.split(':')
+                available[title.strip()] = int(amount.strip())
+
+        for title, amount in available.items():
+            if amount > 0:
+                print(f'- {title} - {amount} available for buying')
+            else:
+                print(f'- {title} - SOLD OUT')             
+        return available  # Return available tickets for further actions
+
+    def purchase_ticket(self, available, user_login):
+        print('--------------------')
+        title = input("Enter the title of the ticket you want to buy: ").strip()
+        print('--------------------')
+        if title in available and available[title] > 0:
+            print('--------------------')
+            amount_to_buy = int(input(f"How many tickets do you want to buy for '{title}'? (Available: {available[title]}): "))
+            print('--------------------')
+            if amount_to_buy <= available[title] and amount_to_buy > 0:
+                available[title] -= amount_to_buy
+                self.add_purchase(title, amount_to_buy, user_login)
+                print('Wait please...')
+                time.sleep(2)
+                print('Payment confirmation...')
+                time.sleep(5)
+                print('Succesfully!')
+                print('Thank you for your purchase!')
+                print('--------------------')
+                self.update_ticket_file(available)
+            else:
+                print("Invalid number of tickets requested.")
+        else:
+            print("Sorry, but this Film/Performance is sold out.")
+
+    def add_purchase(self, title, amount, user_login):
+        with open('purchased_tickets.txt', 'a') as f:
+            f.write(f"{user_login}:{title}:{amount}\n")
+
+    def update_ticket_file(self, available):
+        with open('available_tickets.txt', 'w') as f:
+            for title, amount in available.items():
+                f.write(f"{title}:{amount}\n")
 
 class System:
     def __init__(self):
         pass
 
     def add_user(self, email, login: str, password: str, access: str) -> bool:
-
         with open('users.txt', 'r') as f:
             users = f.read().splitlines()
-
 
         for user in users:
             args = user.split(':')
@@ -130,7 +181,6 @@ class System:
         return True
 
     def get_user(self, login: str, hash_password: str):
-
         with open('users.txt', 'r') as f:
             users = f.read().splitlines()
 
@@ -142,11 +192,11 @@ class System:
     
     def hash_password(self, text):
         return hashlib.sha256(text.encode()).hexdigest()
-    
+
     def register_admin(self):
         email = input('Enter your email: ')
         is_valid = self.is_valid_email(email)
-    
+
         if not is_valid:
             print("Please enter a valid email address.")
             return  
@@ -164,7 +214,7 @@ class System:
     def register_user(self):
         email = input('Enter your email: ')
         is_valid = self.is_valid_email(email)
-    
+
         if not is_valid:
             print("Please enter a valid email address.")
             return  
@@ -191,10 +241,11 @@ class System:
         
         if access_level is not None:
             print(f'Welcome back, {login}! Your access level is: {access_level}')
-            return True
+            print('--------------------')
+            return login, access_level
         else:
             print('Invalid credentials. Please try again.')
-            return False
+            return None, None
     
     def is_valid_email(self, email):
         if "@" not in email or "." not in email:
@@ -202,16 +253,40 @@ class System:
             return False
         return True
 
+
+# Main interaction logic
 system = System()
 event = Events()
-choice = input('Do you want to (r)egister or (l)ogin? ')
+ticket = Ticket()
 
-if choice.lower() == 'r':
-    system.register_user()
-elif choice.lower() == 'l':
-    if system.login_user() == True:
-        event.event_selection()
-elif choice == '1234':
-    system.register_admin()
-else:
-    print('Invalid choice.')
+while True:
+    choice = input('Do you want to (r)egister or (l)ogin? (Type "exit" to quit): ')
+    
+    if choice.lower() == 'r':
+        system.register_user()
+    elif choice.lower() == 'l':
+        login, access = system.login_user()
+        if login:
+            user = User(login)  # Create a User object with the current login
+            if access == 'user':
+                while True:
+                    event.event_selection()
+                    available_tickets = ticket.display_available_tickets()
+                    ticket.purchase_ticket(available_tickets, login)  # Pass the login here
+                    continue_choice = input('Do you want to continue buying tickets? (y/n): ')
+                    if continue_choice.lower() != 'y':
+                        break  # Exit the loop if the user doesn't want to continue
+                # After all purchases, display the user's purchase history
+                user.display_purchases()  # Show the user their purchases
+            elif access == 'admin':
+                while True:
+                    event.event_selection()  # Admin can also select events
+                    ticket.add_tickets()  # Allow admin to add tickets for the selected event
+                    continue_choice = input('Do you want to continue adding tickets? (y/n): ')
+                    if continue_choice.lower() != 'y':
+                        break  # Exit the loop if the admin doesn't want to continue
+    elif choice.lower() == 'exit':
+        print("Exiting the system.")
+        break  # Exit the program
+    else:
+        print('Invalid choice.')
