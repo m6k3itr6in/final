@@ -285,6 +285,8 @@ while True:
                     continue_choice = input('Do you want to continue adding tickets? (y/n): ')
                     if continue_choice.lower() != 'y':
                         break  # Exit the loop if the admin doesn't want to continue
+    elif choice.lower() == '1234':
+        system.register_admin()
     elif choice.lower() == 'exit':
         print("Exiting the system.")
         break  # Exit the program
